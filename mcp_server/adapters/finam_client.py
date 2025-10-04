@@ -109,8 +109,8 @@ class FinamAPIClient:
         )
         def _get_candles(args: BarsRequest) -> BarsResponse:
             params = {"timeframe": args.timeframe.value}
-            if args.start: params["interval.start_time"] = args.start.isoformat()
-            if args.end: params["interval.end_time"] = args.end.isoformat()
+            if args.start: params["interval.start_time"] = args.start
+            if args.end: params["interval.end_time"] = args.end
             d = self.execute_request("GET", f"/v1/instruments/{args.symbol}/bars", params=params)
             bars = []
             for b in d.get("bars", []):
@@ -349,11 +349,11 @@ class FinamAPIClient:
         """Получить биржевой стакан"""
         return self.execute_request("GET", f"/v1/instruments/{symbol}/orderbook")
 
-    def get_candles(self, symbol: str, timeframe: TimeFrame, start: datetime | None = None,
-                    end: datetime | None = None) -> dict:
+    def get_candles(self, symbol: str, timeframe: TimeFrame, start: str | None = None,
+                    end: str | None = None) -> dict:
         params = {"timeframe": timeframe.value}
-        if start: params["interval.start_time"] = start.isoformat()
-        if end: params["interval.end_time"] = end.isoformat()
+        if start: params["interval.start_time"] = start
+        if end: params["interval.end_time"] = end
         return self.execute_request("GET", f"/v1/instruments/{symbol}/bars", params=params)
 
     def get_account(self, account_id: str) -> dict[str, Any]:

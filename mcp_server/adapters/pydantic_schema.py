@@ -32,11 +32,15 @@ class Bar(BaseModel):
     close: Decimal = Field(..., description="Цена закрытия")
     volume: Decimal = Field(..., description="Объём торгов за свечу в шт.")
 
+class Interval(BaseModel):
+    start_time: str = Field(..., description="Начало интервала ISO8601 c Z или offset")
+    end_time: str = Field(..., description="Окончание интервала ISO8601 c Z или offset")
+
 class BarsRequest(BaseModel):
-    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
-    timeframe: TimeFrame = Field(..., description="Таймфрейм свечей")
-    start: Optional[datetime] = Field(None, description="Начало периода ISO8601")
-    end: Optional[datetime] = Field(None, description="Окончание периода ISO8601")
+    symbol: str
+    timeframe: TimeFrame
+    start: Optional[str] = Field(None, description="Начало периода ISO8601 c Z")
+    end: Optional[str] = Field(None, description="Окончание периода ISO8601 c Z")
 
 class BarsResponse(BaseModel):
     symbol: str = Field(..., description="Символ инструмента")
