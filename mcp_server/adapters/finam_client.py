@@ -54,6 +54,7 @@ class FinamAPIClient:
             structured_output=False)
         def _get_quote(args: QuoteRequest) -> QuoteResponse:
             d = self.execute_request("GET", f"/v1/instruments/{args.symbol}/quotes/latest")
+
             q = d.get("quote", d)
             opt = q.get("option")
             return QuoteResponse(
@@ -198,6 +199,7 @@ class FinamAPIClient:
         )
         def _get_exchanges() -> Exchanges:
             d = self.get_exchanges()
+
             return Exchanges.model_validate(d)
 
         @mcp.tool(

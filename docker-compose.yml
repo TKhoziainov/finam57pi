@@ -36,6 +36,21 @@ services:
     networks:
       - finam-network
 
+  agentic_service:
+    build:
+      context: ./agents
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env.example
+    ports:
+      - "8011:8011"
+    restart: unless-stopped
+    networks:
+      - finam-network
+    depends_on:
+      - mcp
+      - web
+
 networks:
   finam-network:
     driver: bridge
