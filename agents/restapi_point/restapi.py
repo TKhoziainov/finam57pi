@@ -17,8 +17,9 @@ async def startup():
 async def send_graph(input: Inp):
     graph_ = await get_graph()
     initial_state = {"messages": [{"role": "user", "content": input.user_query}], 'config': {"configurable": {"thread_id": input.account_id}}}
+
     result = await graph_.ainvoke(initial_state)
-    return result
+    return {"text": result['messages'][-1]['content']}
 
 if __name__ == '__main__':
     uvicorn.run(service, port=8011)
