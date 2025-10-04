@@ -23,7 +23,7 @@ from pathlib import Path
 import click
 from tqdm import tqdm  # type: ignore[import-untyped]
 
-from src.app.core.llm import call_llm
+from app.core import call_llm
 
 
 def calculate_cost(usage: dict, model: str) -> float:
@@ -198,7 +198,7 @@ def generate_api_call(question: str, examples: list[dict[str, str]], model: str)
 @click.option("--num-examples", type=int, default=10, help="Количество примеров для few-shot")
 def main(test_file: Path, train_file: Path, output_file: Path, num_examples: int) -> None:
     """Генерация submission.csv для хакатона"""
-    from src.app.core.config import get_settings
+    from app.core.config import get_settings
 
     click.echo("🚀 Генерация submission файла...")
     click.echo(f"📖 Загрузка примеров из {train_file}...")

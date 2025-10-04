@@ -97,7 +97,7 @@ make lint-fix       # Исправить проблемы
 ### Finam API Client
 
 ```python
-from src.app.adapters import FinamAPIClient
+from mcp_server.adapters import FinamAPIClient
 
 client = FinamAPIClient(access_token="your_token")
 
@@ -116,7 +116,7 @@ client.cancel_order("ACC-001-A", "ORD123")
 ### LLM
 
 ```python
-from src.app.core import call_llm
+from app.core import call_llm
 
 messages = [{"role": "user", "content": "Hello"}]
 response = call_llm(messages, temperature=0.3)

@@ -11,8 +11,8 @@ import sys
 
 import click
 
-from src.app.adapters import FinamAPIClient
-from src.app.core import call_llm, get_settings
+from mcp_server.adapters import FinamAPIClient
+from app.core import call_llm, get_settings
 
 
 def create_system_prompt() -> str:

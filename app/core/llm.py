@@ -5,7 +5,12 @@ import requests
 from .config import get_settings
 
 
-def call_llm(messages: list[dict[str, str]], temperature: float = 0.2, max_tokens: int | None = None) -> dict[str, Any]:
+def call_llm(
+        messages: list[dict[str, str]],
+        temperature: float = 0.2,
+        max_tokens: int | None = None,
+        tools: list[dict[str, Any]] | None = None,
+        tool_choice: str | None = None,) -> dict[str, Any]:
     """Простой вызов LLM без tools"""
     s = get_settings()
     payload: dict[str, Any] = {
@@ -13,8 +18,13 @@ def call_llm(messages: list[dict[str, str]], temperature: float = 0.2, max_token
         "messages": messages,
         "temperature": temperature,
     }
+
     if max_tokens:
         payload["max_tokens"] = max_tokens
+    if tools:
+        payload["tools"] = tools
+    if tool_choice:
+        payload["tool_choice"] = tool_choice
 
     r = requests.post(
         f"{s.openrouter_base}/chat/completions",
