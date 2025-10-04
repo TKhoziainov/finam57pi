@@ -1,13 +1,124 @@
-from typing import Optional, List
+from __future__ import annotations
+from enum import IntEnum, StrEnum
+from decimal import Decimal
+from typing import List, Optional
+from datetime import datetime
 from pydantic import BaseModel, Field
+
+class TimeFrame(IntEnum):
+    TIME_FRAME_UNSPECIFIED = 0
+    TIME_FRAME_M1 = 1
+    TIME_FRAME_M5 = 5
+    TIME_FRAME_M15 = 9
+    TIME_FRAME_M30 = 11
+    TIME_FRAME_H1 = 12
+    TIME_FRAME_H2 = 13
+    TIME_FRAME_H4 = 15
+    TIME_FRAME_H8 = 17
+    TIME_FRAME_D = 19
+    TIME_FRAME_W = 20
+    TIME_FRAME_MN = 21
+    TIME_FRAME_QR = 22
+
+class Interval(BaseModel):
+    start_time: datetime
+    end_time: datetime
+
+class Bar(BaseModel):
+    timestamp: datetime
+    open: Decimal
+    high: Decimal
+    low: Decimal
+    close: Decimal
+    volume: Decimal
+
+class BarsRequest(BaseModel):
+    symbol: str
+    timeframe: TimeFrame
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+
+class BarsResponse(BaseModel):
+    symbol: str
+    bars: List[Bar]
+
+class QuoteOption(BaseModel):
+    open_interest: Optional[Decimal] = None
+    implied_volatility: Optional[Decimal] = None
+    theoretical_price: Optional[Decimal] = None
+    delta: Optional[Decimal] = None
+    gamma: Optional[Decimal] = None
+    theta: Optional[Decimal] = None
+    vega: Optional[Decimal] = None
+    rho: Optional[Decimal] = None
+
+class Quote(BaseModel):
+    symbol: str
+    timestamp: datetime
+    ask: Optional[Decimal] = None
+    ask_size: Optional[Decimal] = None
+    bid: Optional[Decimal] = None
+    bid_size: Optional[Decimal] = None
+    last: Optional[Decimal] = None
+    last_size: Optional[Decimal] = None
+    volume: Optional[Decimal] = None
+    turnover: Optional[Decimal] = None
+    open: Optional[Decimal] = None
+    high: Optional[Decimal] = None
+    low: Optional[Decimal] = None
+    close: Optional[Decimal] = None
+    change: Optional[Decimal] = None
+    option: Optional[QuoteOption] = None
+
+class QuoteRequest(BaseModel):
+    symbol: str
+
+class OrderBookAction(IntEnum):
+    ACTION_UNSPECIFIED = 0
+    ACTION_REMOVE = 1
+    ACTION_ADD = 2
+    ACTION_UPDATE = 3
+
+class OrderBookRow(BaseModel):
+    price: Decimal
+    sell_size: Decimal
+    buy_size: Decimal
+    action: OrderBookAction
+    mpid: Optional[str] = None
+    timestamp: datetime
+
+class QuoteResponse(BaseModel):
+    symbol: str
+    quote: Quote
+
+class TradeSide(StrEnum):
+    BUY = "buy"
+    SELL = "sell"
+
+class LatestTradesRequest(BaseModel):
+    symbol: str
+
+class LatestTradesResponse(BaseModel):
+    symbol: str
+    trades: List[Trade]
+
+class OrderBook(BaseModel):
+    rows: List[OrderBookRow]
+
+class OrderBookRequest(BaseModel):
+    symbol: str
+
+class OrderBookResponse(BaseModel):
+    symbol: str
+    orderbook: OrderBook
 
 class GetQuoteArgs(BaseModel):
     symbol: str = Field(..., description="Символ в формате ticker@mic, например SBER@MISX")
 
-class Quote(BaseModel):
-    symbol: str = Field(..., description="Символ инструмента")
-    price: float = Field(..., description="Последняя цена сделки/котировка")
-    timestamp: str = Field(..., description="Время котировки ISO8601")
+# class Quote(BaseModel):
+#     symbol: str = Field(..., description="Символ инструмента")
+#     price: float = Field(..., description="Последняя цена сделки/котировка")
+#     timestamp: str = Field(..., description="Время котировки ISO8601")
 
 class GetOrderbookArgs(BaseModel):
     symbol: str = Field(..., description="ticker@mic")
@@ -102,12 +213,12 @@ class TradesArgs(BaseModel):
     limit: Optional[int] = Field(None, ge=1, le=5000, description="Лимит записей")
 
 class Trade(BaseModel):
-    trade_id: str = Field(..., description="ID сделки")
-    timestamp: str = Field(..., description="Время сделки ISO8601")
-    symbol: str = Field(..., description="ticker@mic")
-    quantity: float = Field(..., description="Количество")
-    price: float = Field(..., description="Цена")
-    side: str = Field(..., description="BUY или SELL")
+    trade_id: str
+    mpid: Optional[str] = None
+    timestamp: datetime
+    price: Decimal
+    size: Decimal
+    side: TradeSide
 
 class TransactionsArgs(BaseModel):
     account_id: str = Field(..., description="ID счета")
@@ -139,8 +250,13 @@ class SessionDetails(BaseModel):
     account_ids: List[str] = Field(default_factory=list, description="Доступные ID счетов")
     readonly: bool = Field(..., description="Флаг только для чтения")
 
+class Exchange(BaseModel):
+    mic: str
+    name: str
+
 class Exchanges(BaseModel):
-    exchanges: List[str] = Field(..., description="Список mic-кодов бирж")
+    exchanges: List[Exchange]
+
 
 class SearchAssetsArgs(BaseModel):
     ticker: Optional[str] = Field(None, description="Фильтр по тикеру")
@@ -215,3 +331,55 @@ class PrintTrade(BaseModel):
 class InstrTradesLatest(BaseModel):
     symbol: str = Field(..., description="ticker@mic")
     trades: List[PrintTrade] = Field(..., description="Последние сделки")
+
+class ClockResponse(BaseModel):
+    timestamp: str
+
+class OrderSide(StrEnum):
+    LONG = "long"
+    SHORT = "short"
+
+class OrderType(StrEnum):
+    MARKET = "ORDER_TYPE_MARKET"
+    LIMIT = "ORDER_TYPE_LIMIT"
+    STOP = "ORDER_TYPE_STOP"
+    STOP_LIMIT = "ORDER_TYPE_STOP_LIMIT"
+
+class TimeInForce(StrEnum):
+    DAY = "TIF_DAY"
+    IOC = "TIF_IOC"
+    FOK = "TIF_FOK"
+    GTC = "TIF_GTC"
+
+class StopCondition(StrEnum):
+    GREATER_OR_EQUAL = "STOP_CONDITION_GREATER_OR_EQUAL"
+    LESS_OR_EQUAL = "STOP_CONDITION_LESS_OR_EQUAL"
+
+class Leg(BaseModel):
+    symbol: str
+    quantity: str
+    side: OrderSide
+    type: OrderType
+    time_in_force: Optional[TimeInForce] = None
+    limit_price: Optional[str] = None
+    stop_price: Optional[str] = None
+    stop_condition: Optional[StopCondition] = None
+    comment: Optional[str] = Field(None, max_length=128)
+
+class ValidBefore(BaseModel):
+    timestamp: str
+
+class PlaceOrderArgs(BaseModel):
+    account_id: str
+    symbol: Optional[str] = None
+    quantity: Optional[str] = None
+    side: Optional[OrderSide] = None
+    type: Optional[OrderType] = None
+    time_in_force: Optional[TimeInForce] = None
+    limit_price: Optional[str] = None
+    stop_price: Optional[str] = None
+    stop_condition: Optional[StopCondition] = None
+    legs: Optional[List[Leg]] = None
+    client_order_id: Optional[str] = Field(None, max_length=20)
+    valid_before: Optional[ValidBefore] = None
+    comment: Optional[str] = Field(None, max_length=128)
