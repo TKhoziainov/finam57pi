@@ -11,6 +11,8 @@ from langgraph.prebuilt import ToolNode
 from dataclasses import dataclass
 from typing import Literal
 
+class State(TypedDict):
+    messages: Annotated[list, add_messages]
 
 @dataclass
 class UserCommand:

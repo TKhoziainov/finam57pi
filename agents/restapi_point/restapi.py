@@ -16,7 +16,9 @@ async def startup():
 @service.post("/process_data")
 async def send_graph(input: Inp):
     graph_ = await get_graph()
-    initial_state = {"messages": [{"role": "user", "content": input.user_query}], 'config': {"configurable": {"thread_id": input.account_id}}}
+    initial_state = graph_.ainvoke({
+        "messages": [{"role": "user", "content": input.user_query}]
+    }, config={"configurable": {"thread_id": input.account_id}})
 
     result = await graph_.ainvoke(initial_state)
     return {"text": result['messages'][-1]['content']}
