@@ -69,20 +69,19 @@ async def run_agent_async(user_query: str):
                 }
             } for t in tools_list.tools]
 
+
             messages = [
                 {"role": "system", "content": create_system_prompt()},
                 {"role": "user", "content": user_query},
             ]
-
             while True:
                 resp = call_llm(
                     messages=messages,
-                    temperature=0.3,
+                    temperature=0.2,
                     tools=openai_tools,
                     tool_choice="auto",
                 )
                 msg = resp["choices"][0]["message"]
-
 
                 if not msg.get("tool_calls"):
                     return msg.get("content", "")
@@ -96,19 +95,19 @@ async def run_agent_async(user_query: str):
                         args = json.loads(args_json)
                     except Exception:
                         args = {}
-                    result = await session.call_tool(name, args)
 
+                    result = await session.call_tool(name, args)
 
                     content_parts = getattr(result, "content", []) or []
                     text = "\n".join(
                         p.text for p in content_parts if getattr(p, "type", "") == "text"
                     ) or json.dumps(getattr(result, "result", {}), ensure_ascii=False)
 
-                    messages.append({
-                        "role": "tool",
-                        "tool_call_id": tc["id"],
-                        "content": text,
-                    })
+                    # messages.append({
+                    #     "role": "tool",
+                    #     "tool_call_id": tc["id"],
+                    #     "content": text,
+                    # })
 
 # async def run_agent_async(user_query: str):
 #     url = os.getenv("MCP_SERVER_URL", "http://finam-mcp-server:8010/sse")
