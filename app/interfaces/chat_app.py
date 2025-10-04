@@ -11,8 +11,7 @@ import json
 
 import streamlit as st
 
-from src.app.adapters import FinamAPIClient
-from src.app.core import call_llm, get_settings
+from app.core import call_llm, get_settings
 
 
 def create_system_prompt() -> str:
@@ -96,15 +95,15 @@ def main() -> None:  # noqa: C901
         st.session_state.messages = []
 
     # Инициализация Finam API клиента
-    finam_client = FinamAPIClient(access_token=api_token or None, base_url=api_base_url if api_base_url else None)
+    # finam_client = FinamAPIClient(access_token=api_token or None, base_url=api_base_url if api_base_url else None)
 
     # Проверка токена
-    if not finam_client.access_token:
-        st.sidebar.warning(
-            "⚠️ Finam API токен не установлен. Установите в переменной окружения FINAM_ACCESS_TOKEN или введите выше."
-        )
-    else:
-        st.sidebar.success("✅ Finam API токен установлен")
+    # if not finam_client.access_token:
+    #     st.sidebar.warning(
+    #         "⚠️ Finam API токен не установлен. Установите в переменной окружения FINAM_ACCESS_TOKEN или введите выше."
+    #     )
+    # else:
+    #     st.sidebar.success("✅ Finam API токен установлен")
 
     # Отображение истории сообщений
     for message in st.session_state.messages:

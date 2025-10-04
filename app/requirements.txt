@@ -42,3 +42,5 @@ uvicorn==0.37.0
 mcp==1.16.0
 openai==2.1.0
 streamlit==1.50.0
+mcp
+websockets>=12.0

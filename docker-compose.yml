@@ -4,34 +4,35 @@ services:
   # Streamlit веб-интерфейс
   web:
     build:
-      context: .
+      context: ./app
       dockerfile: Dockerfile
     container_name: finam-ai-trader-web
     ports:
       - "8501:8501"
-    environment:
-      # OpenRouter API
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENROUTER_BASE=${OPENROUTER_BASE:-https://openrouter.ai/api/v1}
-      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-openai/gpt-4o-mini}
-
-      # Finam TradeAPI
-      - FINAM_ACCESS_TOKEN=${FINAM_ACCESS_TOKEN:-}
-      - FINAM_API_BASE_URL=${FINAM_API_BASE_URL:-https://api.finam.ru}
-
-      # App settings
-      - APP_DEBUG=${APP_DEBUG:-false}
+    env_file:
+      - .env.example
     volumes:
-      # Монтируем код для разработки (закомментируйте для production)
-      - ./src:/app/src
-      - ./data:/app/data
+      - ./app:/app
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8501/_stcore/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - finam-network
+
+  mcp:
+    build:
+      context: mcp_server
+      dockerfile: ./Dockerfile
+    container_name: finam-mcp-server
+    env_file:
+      - .env.example
+    ports:
+      - "8010:8010"
+    restart: unless-stopped
     networks:
       - finam-network
 

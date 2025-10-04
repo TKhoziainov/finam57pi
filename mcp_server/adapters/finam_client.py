@@ -7,6 +7,7 @@ import os
 from typing import Any
 
 import requests
+from mcp.server.fastmcp import FastMCP
 
 
 class FinamAPIClient:
@@ -30,9 +31,23 @@ class FinamAPIClient:
 
         if self.access_token:
             self.session.headers.update({
-                "Authorization": f"Bearer {self.access_token}",
+                "Authorization": f"{self.access_token}",
                 "Content-Type": "application/json",
             })
+
+        print(self.session)
+    def register_tools(self, mcp: FastMCP):
+        mcp.tool()(self.get_quote)
+        mcp.tool()(self.get_orderbook)
+        mcp.tool()(self.get_candles)
+        mcp.tool()(self.get_account)
+        mcp.tool()(self.get_orders)
+        mcp.tool()(self.get_order)
+        mcp.tool()(self.create_order)
+        mcp.tool()(self.cancel_order)
+        mcp.tool()(self.get_trades)
+        mcp.tool()(self.get_positions)
+        mcp.tool()(self.get_session_details)
 
     def execute_request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:  # noqa: ANN401
         """
@@ -134,3 +149,4 @@ class FinamAPIClient:
     def get_session_details(self) -> dict[str, Any]:
         """Получить детали текущей сессии"""
         return self.execute_request("POST", "/v1/sessions/details")
+
