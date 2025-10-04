@@ -21,57 +21,57 @@ class TimeFrame(IntEnum):
     TIME_FRAME_QR = 22
 
 class Interval(BaseModel):
-    start_time: datetime
-    end_time: datetime
+    start_time: datetime = Field(..., description="Начало интервала ISO8601")
+    end_time: datetime = Field(..., description="Окончание интервала ISO8601")
 
 class Bar(BaseModel):
-    timestamp: datetime
-    open: Decimal
-    high: Decimal
-    low: Decimal
-    close: Decimal
-    volume: Decimal
+    timestamp: datetime = Field(..., description="Метка времени свечи ISO8601")
+    open: Decimal = Field(..., description="Цена открытия")
+    high: Decimal = Field(..., description="Максимальная цена")
+    low: Decimal = Field(..., description="Минимальная цена")
+    close: Decimal = Field(..., description="Цена закрытия")
+    volume: Decimal = Field(..., description="Объём торгов за свечу в шт.")
 
 class BarsRequest(BaseModel):
-    symbol: str
-    timeframe: TimeFrame
-    start: Optional[datetime] = None
-    end: Optional[datetime] = None
+    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
+    timeframe: TimeFrame = Field(..., description="Таймфрейм свечей")
+    start: Optional[datetime] = Field(None, description="Начало периода ISO8601")
+    end: Optional[datetime] = Field(None, description="Окончание периода ISO8601")
 
 class BarsResponse(BaseModel):
-    symbol: str
-    bars: List[Bar]
+    symbol: str = Field(..., description="Символ инструмента")
+    bars: List[Bar] = Field(..., description="Список агрегированных свечей")
 
 class QuoteOption(BaseModel):
-    open_interest: Optional[Decimal] = None
-    implied_volatility: Optional[Decimal] = None
-    theoretical_price: Optional[Decimal] = None
-    delta: Optional[Decimal] = None
-    gamma: Optional[Decimal] = None
-    theta: Optional[Decimal] = None
-    vega: Optional[Decimal] = None
-    rho: Optional[Decimal] = None
+    open_interest: Optional[Decimal] = Field(None, description="Открытый интерес")
+    implied_volatility: Optional[Decimal] = Field(None, description="Подразумеваемая волатильность")
+    theoretical_price: Optional[Decimal] = Field(None, description="Теоретическая цена")
+    delta: Optional[Decimal] = Field(None, description="Delta")
+    gamma: Optional[Decimal] = Field(None, description="Gamma")
+    theta: Optional[Decimal] = Field(None, description="Theta")
+    vega: Optional[Decimal] = Field(None, description="Vega")
+    rho: Optional[Decimal] = Field(None, description="Rho")
 
 class Quote(BaseModel):
-    symbol: str
-    timestamp: datetime
-    ask: Optional[Decimal] = None
-    ask_size: Optional[Decimal] = None
-    bid: Optional[Decimal] = None
-    bid_size: Optional[Decimal] = None
-    last: Optional[Decimal] = None
-    last_size: Optional[Decimal] = None
-    volume: Optional[Decimal] = None
-    turnover: Optional[Decimal] = None
-    open: Optional[Decimal] = None
-    high: Optional[Decimal] = None
-    low: Optional[Decimal] = None
-    close: Optional[Decimal] = None
-    change: Optional[Decimal] = None
-    option: Optional[QuoteOption] = None
+    symbol: str = Field(..., description="Символ инструмента")
+    timestamp: datetime = Field(..., description="Метка времени котировки ISO8601")
+    ask: Optional[Decimal] = Field(None, description="Аск. 0 при отсутствии активного аска")
+    ask_size: Optional[Decimal] = Field(None, description="Размер аска")
+    bid: Optional[Decimal] = Field(None, description="Бид. 0 при отсутствии активного бида")
+    bid_size: Optional[Decimal] = Field(None, description="Размер бида")
+    last: Optional[Decimal] = Field(None, description="Цена последней сделки")
+    last_size: Optional[Decimal] = Field(None, description="Размер последней сделки")
+    volume: Optional[Decimal] = Field(None, description="Дневной объём сделок")
+    turnover: Optional[Decimal] = Field(None, description="Дневной оборот сделок")
+    open: Optional[Decimal] = Field(None, description="Дневная цена открытия")
+    high: Optional[Decimal] = Field(None, description="Дневной максимум")
+    low: Optional[Decimal] = Field(None, description="Дневной минимум")
+    close: Optional[Decimal] = Field(None, description="Дневная цена закрытия")
+    change: Optional[Decimal] = Field(None, description="Изменение цены (last − close)")
+    option: Optional[QuoteOption] = Field(None, description="Опционные греческие и параметры")
 
 class QuoteRequest(BaseModel):
-    symbol: str
+    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
 
 class OrderBookAction(IntEnum):
     ACTION_UNSPECIFIED = 0
@@ -80,37 +80,37 @@ class OrderBookAction(IntEnum):
     ACTION_UPDATE = 3
 
 class OrderBookRow(BaseModel):
-    price: Decimal
-    sell_size: Decimal
-    buy_size: Decimal
-    action: OrderBookAction
-    mpid: Optional[str] = None
-    timestamp: datetime
+    price: Decimal = Field(..., description="Цена уровня")
+    sell_size: Decimal = Field(..., description="Размер на продажу")
+    buy_size: Decimal = Field(..., description="Размер на покупку")
+    action: OrderBookAction = Field(..., description="Действие уровня стакана")
+    mpid: Optional[str] = Field(None, description="Идентификатор участника рынка")
+    timestamp: datetime = Field(..., description="Метка времени уровня ISO8601")
 
 class QuoteResponse(BaseModel):
-    symbol: str
-    quote: Quote
+    symbol: str = Field(..., description="Символ инструмента")
+    quote: Quote = Field(..., description="Котировка")
 
 class TradeSide(StrEnum):
     BUY = "buy"
     SELL = "sell"
 
 class LatestTradesRequest(BaseModel):
-    symbol: str
+    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
 
 class LatestTradesResponse(BaseModel):
-    symbol: str
-    trades: List[Trade]
+    symbol: str = Field(..., description="Символ инструмента")
+    trades: List[Trade] = Field(..., description="Список последних сделок")
 
 class OrderBook(BaseModel):
-    rows: List[OrderBookRow]
+    rows: List[OrderBookRow] = Field(..., description="Уровни стакана")
 
 class OrderBookRequest(BaseModel):
-    symbol: str
+    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
 
 class OrderBookResponse(BaseModel):
-    symbol: str
-    orderbook: OrderBook
+    symbol: str = Field(..., description="Символ инструмента")
+    orderbook: OrderBook = Field(..., description="Текущий стакан")
 
 class GetQuoteArgs(BaseModel):
     symbol: str = Field(..., description="Символ в формате ticker@mic, например SBER@MISX")
@@ -356,30 +356,30 @@ class StopCondition(StrEnum):
     LESS_OR_EQUAL = "STOP_CONDITION_LESS_OR_EQUAL"
 
 class Leg(BaseModel):
-    symbol: str
-    quantity: str
-    side: OrderSide
-    type: OrderType
-    time_in_force: Optional[TimeInForce] = None
-    limit_price: Optional[str] = None
-    stop_price: Optional[str] = None
-    stop_condition: Optional[StopCondition] = None
-    comment: Optional[str] = Field(None, max_length=128)
+    symbol: str = Field(..., description="Символ инструмента в формате ticker@mic")
+    quantity: str = Field(..., description="Количество в шт.")
+    side: OrderSide = Field(..., description="Сторона заявки: long или short")
+    type: OrderType = Field(..., description="Тип заявки")
+    time_in_force: Optional[TimeInForce] = Field(None, description="Срок действия заявки")
+    limit_price: Optional[str] = Field(None, description="Цена для лимитной/стоп-лимитной")
+    stop_price: Optional[str] = Field(None, description="Цена триггера для стоп-заявок")
+    stop_condition: Optional[StopCondition] = Field(None, description="Условие для стоп-заявок")
+    comment: Optional[str] = Field(None, max_length=128, description="Метка заявки")
 
 class ValidBefore(BaseModel):
-    timestamp: str
+    timestamp: str = Field(..., description="Срок действия условной заявки ISO8601")
 
 class PlaceOrderArgs(BaseModel):
-    account_id: str
-    symbol: Optional[str] = None
-    quantity: Optional[str] = None
-    side: Optional[OrderSide] = None
-    type: Optional[OrderType] = None
-    time_in_force: Optional[TimeInForce] = None
-    limit_price: Optional[str] = None
-    stop_price: Optional[str] = None
-    stop_condition: Optional[StopCondition] = None
-    legs: Optional[List[Leg]] = None
-    client_order_id: Optional[str] = Field(None, max_length=20)
-    valid_before: Optional[ValidBefore] = None
-    comment: Optional[str] = Field(None, max_length=128)
+    account_id: str = Field(..., description="Идентификатор аккаунта")
+    symbol: Optional[str] = Field(None, description="Символ инструмента для одноногой заявки")
+    quantity: Optional[str] = Field(None, description="Количество в шт. для одноногой заявки")
+    side: Optional[OrderSide] = Field(None, description="Сторона: long или short")
+    type: Optional[OrderType] = Field(None, description="Тип заявки")
+    time_in_force: Optional[TimeInForce] = Field(None, description="Срок действия заявки")
+    limit_price: Optional[str] = Field(None, description="Цена для лимитной/стоп-лимитной")
+    stop_price: Optional[str] = Field(None, description="Цена триггера для стоп-заявок")
+    stop_condition: Optional[StopCondition] = Field(None, description="Условие для стоп-заявок")
+    legs: Optional[List[Leg]] = Field(None, description="Ноги для мульти-лег заявки")
+    client_order_id: Optional[str] = Field(None, max_length=20, description="Уникальный клиентский ID")
+    valid_before: Optional[ValidBefore] = Field(None, description="Время истечения условной заявки")
+    comment: Optional[str] = Field(None, max_length=128, description="Метка заявки")
