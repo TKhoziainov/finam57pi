@@ -3,6 +3,7 @@ import os
 import asyncio
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from .state import State, UserCommand, Code
@@ -89,7 +90,8 @@ def build_graph(tools):
     gb.add_edge("planner", "code")
     gb.add_edge("code", END)
     gb.add_edge("planner", END)
-    return gb.compile()
+    memory = InMemorySaver()
+    return gb.compile(checkpointer=memory)
 
 async def init_tools():
     return await mcp_client.get_tools()
